@@ -33,11 +33,20 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
 
   // Sort orders based on current sort field and direction
   const sortedOrders = [...orders].sort((a, b) => {
-    if (a[sortField] < b[sortField]) return sortDirection === "asc" ? -1 : 1;
-    if (a[sortField] > b[sortField]) return sortDirection === "asc" ? 1 : -1;
-    return 0;
+    // Handle numeric fields
+    if (sortField === "price" || sortField === "quantity") {
+      const aValue = parseFloat(a[sortField].replace(/,/g, ''));
+      const bValue = parseFloat(b[sortField].replace(/,/g, ''));
+      return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+    }
+    
+    // Handle string fields
+    const aValue = a[sortField].toLowerCase();
+    const bValue = b[sortField].toLowerCase();
+    return sortDirection === "asc" 
+      ? aValue.localeCompare(bValue)
+      : bValue.localeCompare(aValue);
   });
-
   // Get current orders for pagination
   const indexOfLastOrder = currentPage * ordersPerPage;
   const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
