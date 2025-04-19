@@ -33,21 +33,22 @@ export default function OrdersTable({ orders }: OrdersTableProps) {
 
   // Sort orders based on current sort field and direction
   const sortedOrders = [...orders].sort((a, b) => {
+    const valueA = String(a[sortField]);
+    const valueB = String(b[sortField]);
+
     // Handle numeric fields
     if (sortField === "price" || sortField === "quantity") {
-      const aNum = parseFloat(aValue.toString().replace(/[^\d.-]/g, ''));
-      const bNum = parseFloat(bValue.toString().replace(/[^\d.-]/g, ''));
+      const numA = parseFloat(valueA.replace(/[^\d.-]/g, ''));
+      const numB = parseFloat(valueB.replace(/[^\d.-]/g, ''));
       
-      if (isNaN(aNum) || isNaN(bNum)) return 0;
-      return sortDirection === "asc" ? aNum - bNum : bNum - aNum;
+      if (isNaN(numA) || isNaN(numB)) return 0;
+      return sortDirection === "asc" ? numA - numB : numB - numA;
     }
 
     // Handle string fields
-    const aStr = aValue.toString().toLowerCase();
-    const bStr = bValue.toString().toLowerCase();
     return sortDirection === "asc" 
-      ? aStr.localeCompare(bStr)
-      : bStr.localeCompare(aStr);
+      ? valueA.toLowerCase().localeCompare(valueB.toLowerCase())
+      : valueB.toLowerCase().localeCompare(valueA.toLowerCase());
   });
 
   // Get current orders for pagination
